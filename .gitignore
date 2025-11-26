@@ -1,11 +1,3 @@
-# Firebase config with secrets (generated from template during deployment)
-# IMPORTANT: Do NOT commit index.html with hardcoded API keys!
-# The index.html file is generated from index.template.html during GitHub Actions deployment
-index.html
-
-# Build output
-_site/
-
 # Backup files
 *.bak
 *~
