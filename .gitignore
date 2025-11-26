@@ -3,6 +3,9 @@
 # The index.html file is generated from index.template.html during GitHub Actions deployment
 index.html
 
+# Build output
+_site/
+
 # Backup files
 *.bak
 *~
