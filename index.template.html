@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrakkerDevDay - SYSTEM POLL</title>
+    <style>
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            41.99% { opacity: 1; }
+            42% { opacity: 0.95; }
+            43% { opacity: 1; }
+        }
+
+        @keyframes glitch {
+            0%, 100% {
+                text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+            }
+            25% {
+                text-shadow: -1px 0 10px #00ff00, 1px 1px 20px #00ff00;
+            }
+            50% {
+                text-shadow: 1px -1px 10px #00ff00, -1px 0 20px #00ff00;
+            }
+            75% {
+                text-shadow: -1px 1px 10px #00ff00, 0 -1px 20px #00ff00;
+            }
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% {
+                box-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, inset 0 0 5px rgba(0,255,0,0.2);
+            }
+            50% {
+                box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, inset 0 0 10px rgba(0,255,0,0.3);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', 'Lucida Console', Monaco, monospace;
+            background: #000000;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 255, 0, 0.03) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(0, 255, 0, 0.03) 3px
+                );
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #00ff00;
+            animation: flicker 4s infinite;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: rgba(0, 20, 0, 0.95);
+            border: 2px solid #00ff00;
+            padding: 0;
+            box-shadow:
+                0 0 30px rgba(0, 255, 0, 0.4),
+                inset 0 0 30px rgba(0, 255, 0, 0.05);
+            position: relative;
+        }
+
+        /* Terminal Header Bar */
+        .terminal-header {
+            background: rgba(0, 50, 0, 0.6);
+            border-bottom: 2px solid #00ff00;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .terminal-header .status {
+            color: #00dd00;
+            letter-spacing: 1px;
+        }
+
+        .terminal-header .connection {
+            color: #00aa00;
+            opacity: 0.8;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 40px;
+        }
+
+        /* ASCII Logo */
+        .logo {
+            color: #00dd00;
+            font-size: 10px;
+            line-height: 1.2;
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            letter-spacing: -1px;
+            text-shadow: 0 0 8px rgba(0,255,0,0.6);
+            font-weight: bold;
+        }
+
+        /* Main Title */
+        h1 {
+            text-align: center;
+            color: #00ff00;
+            margin-bottom: 40px;
+            font-size: 2.8em;
+            font-weight: bold;
+            text-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00;
+            animation: glitch 6s infinite;
+            letter-spacing: 8px;
+            padding: 20px 0;
+        }
+
+        /* Mission Brief Box */
+        .mission-brief {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: rgba(0, 50, 0, 0.3);
+            border: 2px solid #00ff00;
+            border-radius: 0;
+            position: relative;
+        }
+
+        .mission-brief::before {
+            content: "[ MISSION BRIEF ]";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: rgba(0, 20, 0, 0.95);
+            padding: 0 15px;
+            font-size: 12px;
+            color: #00ff00;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .mission-brief p {
+            margin: 12px 0;
+            line-height: 1.8;
+            color: #00dd00;
+            text-align: center;
+        }
+
+        .mission-brief .timeframe {
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-shadow: 0 0 8px #00ff00;
+            letter-spacing: 2px;
+        }
+
+        .mission-brief em {
+            color: #00ff00;
+            font-style: italic;
+        }
+
+        /* User Input Section */
+        .user-input {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: rgba(0, 30, 0, 0.4);
+            border: 2px solid #00aa00;
+            position: relative;
+        }
+
+        .user-input::before {
+            content: "[ USER IDENTIFICATION ]";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: rgba(0, 20, 0, 0.95);
+            padding: 0 15px;
+            font-size: 12px;
+            color: #00ff00;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .user-input label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #00ff00;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        .user-input label .required {
+            color: #ff0000;
+            text-shadow: 0 0 5px #ff0000;
+            animation: blink 1.5s infinite;
+        }
+
+        .user-input input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #00aa00;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+
+        .user-input input:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            background: rgba(0, 30, 0, 0.8);
+        }
+
+        .user-input input::placeholder {
+            color: #005500;
+        }
+
+        /* Topics Container */
+        #topicsContainer {
+            margin-bottom: 30px;
+        }
+
+        /* Topic Card */
+        .topic {
+            margin-bottom: 30px;
+            padding: 30px;
+            background: rgba(0, 40, 0, 0.3);
+            border: 2px solid #00aa00;
+            border-left: 5px solid #00ff00;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .topic:hover {
+            border-color: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            background: rgba(0, 50, 0, 0.4);
+        }
+
+        .topic::after {
+            content: "[SYS]";
+            position: absolute;
+            top: 8px;
+            right: 15px;
+            font-size: 10px;
+            color: #00aa00;
+            opacity: 0.6;
+        }
+
+        .topic-header {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #00ff00;
+            text-shadow: 0 0 8px #00ff00;
+            letter-spacing: 2px;
+        }
+
+        .topic-description {
+            color: #00dd00;
+            margin-bottom: 20px;
+            font-size: 14px;
+            padding-left: 25px;
+            border-left: 3px solid #00aa00;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            line-height: 1.6;
+        }
+
+        /* Options Buttons */
+        .options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 14px 24px;
+            border: 2px solid #00aa00;
+            background: rgba(0, 0, 0, 0.7);
+            color: #00ff00;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .option-btn:hover {
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+            background: rgba(0, 50, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected {
+            background: rgba(0, 255, 0, 0.25);
+            color: #00ff00;
+            border-color: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+            animation: glow-pulse 2s infinite;
+        }
+
+        /* Results Display */
+        .results {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #00aa00;
+            border-left: 4px solid #00ff00;
+        }
+
+        .results strong {
+            color: #00ff00;
+            text-shadow: 0 0 8px #00ff00;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .result-item {
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            background: rgba(0, 40, 0, 0.3);
+            border-left: 3px solid #00aa00;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .result-item:hover {
+            background: rgba(0, 50, 0, 0.5);
+            border-left-color: #00ff00;
+        }
+
+        .result-item strong {
+            display: inline;
+            margin: 0;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-bottom: 30px;
+            padding: 30px;
+            background: rgba(0, 30, 0, 0.4);
+            border: 2px solid #00aa00;
+            position: relative;
+        }
+
+        .comments-section h3 {
+            margin-bottom: 15px;
+            color: #00ff00;
+            text-shadow: 0 0 8px #00ff00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 16px;
+        }
+
+        .comments-section h3::before {
+            content: "// ";
+            color: #00aa00;
+        }
+
+        .comments-section textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #00aa00;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            font-size: 14px;
+            min-height: 100px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .comments-section textarea:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            background: rgba(0, 30, 0, 0.8);
+        }
+
+        .comments-section textarea::placeholder {
+            color: #005500;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            border: 3px solid #00ff00;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 40px;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 15px #00ff00;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: rgba(0, 255, 0, 0.25);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.7);
+            animation: glow-pulse 1s infinite;
+            transform: scale(1.02);
+        }
+
+        .submit-btn:disabled {
+            background: rgba(50, 50, 50, 0.5);
+            border-color: #555;
+            color: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+            animation: none;
+            transform: none;
+        }
+
+        /* Status Messages */
+        .status-message {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            display: none;
+            border: 3px solid;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 15px;
+        }
+
+        .status-message.success {
+            background: rgba(0, 255, 0, 0.15);
+            color: #00ff00;
+            border-color: #00ff00;
+            display: block;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.4);
+        }
+
+        .status-message.success::before {
+            content: "[✓ SUCCESS] ";
+        }
+
+        .status-message.error {
+            background: rgba(255, 0, 0, 0.15);
+            color: #ff0000;
+            border-color: #ff0000;
+            display: block;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
+        }
+
+        .status-message.error::before {
+            content: "[✗ ERROR] ";
+        }
+
+        /* Terminal Footer Bar */
+        .terminal-footer {
+            background: rgba(0, 50, 0, 0.6);
+            border-top: 2px solid #00ff00;
+            padding: 12px 20px;
+            font-size: 10px;
+            color: #00aa00;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .content {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+                letter-spacing: 4px;
+            }
+
+            .logo {
+                font-size: 6px;
+            }
+
+            .options {
+                flex-direction: column;
+            }
+
+            .option-btn {
+                min-width: 100%;
+            }
+
+            .terminal-header {
+                flex-direction: column;
+                gap: 5px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Terminal Header -->
+        <div class="terminal-header">
+            <div class="status">[ SYSTEM STATUS: ONLINE ]</div>
+            <div class="connection">[ SECURE CONNECTION ESTABLISHED | LATENCY: 12ms ]</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- ASCII Logo -->
+            <pre class="logo">
+██████╗ ██████╗  █████╗ ██╗  ██╗██╗  ██╗███████╗██████╗
+██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝██║ ██╔╝██╔════╝██╔══██╗
+██████╔╝██████╔╝███████║█████╔╝ █████╔╝ █████╗  ██████╔╝
+██╔══██╗██╔══██╗██╔══██║██╔═██╗ ██╔═██╗ ██╔══╝  ██╔══██╗
+██████╔╝██║  ██║██║  ██║██║  ██╗██║  ██╗███████╗██║  ██║
+╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+
+██████╗ ███████╗██╗   ██╗██████╗  █████╗ ██╗   ██╗
+██╔══██╗██╔════╝██║   ██║██╔══██╗██╔══██╗╚██╗ ██╔╝
+██║  ██║█████╗  ██║   ██║██║  ██║███████║ ╚████╔╝
+██║  ██║██╔══╝  ╚██╗ ██╔╝██║  ██║██╔══██║  ╚██╔╝
+██████╔╝███████╗ ╚████╔╝ ██████╔╝██║  ██║   ██║
+╚═════╝ ╚══════╝  ╚═══╝  ╚═════╝ ╚═╝  ╚═╝   ╚═╝
+</pre>
+
+            <h1>BRAKKERDEVDAY</h1>
+
+            <!-- Mission Brief -->
+            <div class="mission-brief">
+                <p class="timeframe">[TIMEFRAME] 13:00 - 22:00 [/TIMEFRAME]</p>
+                <p>Kenneth en ik willen een BrakkerDevDay organiseren! Het idee: we geven elkaar workshops en delen kennis over topics waar we mee bezig zijn.</p>
+                <p><em>Stem hieronder voor de topics die je interessant vindt!</em></p>
+            </div>
+
+            <!-- User Input -->
+            <div class="user-input">
+                <label for="userName">Wat is je naam? <span class="required">*</span></label>
+                <input type="text" id="userName" placeholder="root@user:~$ _" required>
+            </div>
+
+            <!-- Topics -->
+            <div id="topicsContainer"></div>
+
+            <!-- Comments Section -->
+            <div class="comments-section">
+                <h3>Extra topics of opmerkingen?</h3>
+                <textarea id="extraComments" placeholder="Heb je zelf nog topics die je wilt voorstellen? Of andere ideeën?"></textarea>
+            </div>
+
+            <!-- Availability Section -->
+            <div class="comments-section">
+                <h3>Beschikbaarheid</h3>
+                <textarea id="availability" placeholder="Welke data/momenten passen jou? (weekend, doordeweeks avond, specifieke data?)"></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button class="submit-btn" id="submitBtn">STEM INDIENEN</button>
+
+            <!-- Status Message -->
+            <div class="status-message" id="statusMessage"></div>
+        </div>
+
+        <!-- Terminal Footer -->
+        <div class="terminal-footer">
+            [ ENCRYPTION: AES-256 ] [ FIREBASE REALTIME DATABASE ] [ BUILD: v2.0 ]
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, push } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "${FIREBASE_API_KEY}",
+            authDomain: "${FIREBASE_AUTH_DOMAIN}",
+            databaseURL: "${FIREBASE_DATABASE_URL}",
+            projectId: "${FIREBASE_PROJECT_ID}",
+            storageBucket: "${FIREBASE_STORAGE_BUCKET}",
+            messagingSenderId: "${FIREBASE_MESSAGING_SENDER_ID}",
+            appId: "${FIREBASE_APP_ID}",
+            measurementId: "${FIREBASE_MEASUREMENT_ID}"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        const topics = [
+            {
+                id: 'smarthome',
+                title: '[0x01] Smart Home Architectuur',
+                description: 'Deep dive in Loxone, Ubiquiti, KNX, Homey setups',
+                options: ['[+] Ik wil dit GEVEN', '[>] Ik wil dit BIJWONEN', '[-] Niet geïnteresseerd']
+            },
+            {
+                id: 'cloud',
+                title: '[0x02] Cloud & Solution Architecture',
+                description: 'Van junior naar senior architect, IoT data, app development',
+                options: ['[+] Ik wil dit GEVEN', '[>] Ik wil dit BIJWONEN', '[-] Niet geïnteresseerd']
+            },
+            {
+                id: 'security',
+                title: '[0x03] Industrial Cybersecurity & IT/OT',
+                description: 'DCS beveiliging, TryHackMe, waar IT en OT botsen',
+                options: ['[+] Ik wil dit GEVEN', '[>] Ik wil dit BIJWONEN', '[-] Niet geïnteresseerd']
+            },
+            {
+                id: 'ai',
+                title: '[0x04] AI in de Praktijk',
+                description: 'MCP servers, Claude integraties, AI tools in productie, prompt engineering',
+                options: ['[+] Ik wil dit GEVEN', '[>] Ik wil dit BIJWONEN', '[-] Niet geïnteresseerd']
+            },
+            {
+                id: 'diy',
+                title: '[0x05] DIY Tech & Maker Projects',
+                description: '3D printing, Raspberry Pi projecten, budget automation',
+                options: ['[+] Ik wil dit GEVEN', '[>] Ik wil dit BIJWONEN', '[-] Niet geïnteresseerd']
+            },
+            {
+                id: 'panel',
+                title: '[0x06] PANEL: Van Technieker naar Manager/Architect',
+                description: 'Management beslissingen, technical leadership, build vs buy, team dynamics',
+                options: ['[*] Ik wil MEEdoen aan panel', '[>] Ik wil dit BIJWONEN', '[-] Niet geïnteresseerd']
+            }
+        ];
+
+        const userVotes = {};
+
+        // Security: Input sanitization function
+        function sanitizeInput(input) {
+            if (typeof input !== 'string') return '';
+
+            // Remove potentially dangerous characters
+            return input
+                .trim()
+                .replace(/[<>\"\'&]/g, '') // Remove HTML/script injection characters
+                .substring(0, 500); // Max 500 characters
+        }
+
+        // Security: Validate name format
+        function validateName(name) {
+            if (!name || name.length < 2) return false;
+            if (name.length > 50) return false;
+
+            // Only allow letters, numbers, spaces, and basic punctuation
+            const nameRegex = /^[a-zA-Z0-9\s\-_.]+$/;
+            return nameRegex.test(name);
+        }
+
+        // Security: Check if user already voted (prevent duplicates)
+        async function hasUserVoted(userName) {
+            const normalizedName = userName.toLowerCase().trim();
+
+            // Check all topics for existing votes from this user
+            for (const topic of topics) {
+                const votesRef = ref(database, `votes/${topic.id}`);
+                const snapshot = await new Promise((resolve) => {
+                    onValue(votesRef, (snap) => resolve(snap), { onlyOnce: true });
+                });
+
+                const data = snapshot.val();
+                if (data) {
+                    const existingVote = Object.values(data).find(
+                        vote => vote.name.toLowerCase().trim() === normalizedName
+                    );
+                    if (existingVote) return true;
+                }
+            }
+            return false;
+        }
+
+        // Security: Rate limiting (basic client-side)
+        let lastSubmitTime = 0;
+        const MIN_SUBMIT_INTERVAL = 5000; // 5 seconds between submissions
+
+        function checkRateLimit() {
+            const now = Date.now();
+            if (now - lastSubmitTime < MIN_SUBMIT_INTERVAL) {
+                return false;
+            }
+            lastSubmitTime = now;
+            return true;
+        }
+
+        function renderTopics() {
+            const container = document.getElementById('topicsContainer');
+
+            topics.forEach(topic => {
+                const topicDiv = document.createElement('div');
+                topicDiv.className = 'topic';
+
+                const header = document.createElement('div');
+                header.className = 'topic-header';
+                header.textContent = topic.title;
+
+                const description = document.createElement('div');
+                description.className = 'topic-description';
+                description.textContent = topic.description;
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                topic.options.forEach((option, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.textContent = option;
+                    btn.onclick = () => selectOption(topic.id, idx, btn);
+                    optionsDiv.appendChild(btn);
+                });
+
+                const resultsDiv = document.createElement('div');
+                resultsDiv.className = 'results';
+                resultsDiv.id = `results-${topic.id}`;
+
+                topicDiv.appendChild(header);
+                topicDiv.appendChild(description);
+                topicDiv.appendChild(optionsDiv);
+                topicDiv.appendChild(resultsDiv);
+
+                container.appendChild(topicDiv);
+
+                // Listen for results
+                listenToResults(topic.id);
+            });
+        }
+
+        function selectOption(topicId, optionIdx, btn) {
+            // Deselect all buttons for this topic
+            const topicDiv = btn.closest('.topic');
+            topicDiv.querySelectorAll('.option-btn').forEach(b => {
+                b.classList.remove('selected');
+            });
+
+            // Select this button
+            btn.classList.add('selected');
+
+            // Store vote
+            userVotes[topicId] = optionIdx;
+        }
+
+        function listenToResults(topicId) {
+            const votesRef = ref(database, `votes/${topicId}`);
+            onValue(votesRef, (snapshot) => {
+                const data = snapshot.val();
+                displayResults(topicId, data);
+            });
+        }
+
+        function displayResults(topicId, data) {
+            const resultsDiv = document.getElementById(`results-${topicId}`);
+            if (!data) {
+                resultsDiv.innerHTML = '<em style="color:#00aa00;">[ NO DATA RECEIVED ]</em>';
+                return;
+            }
+
+            const topic = topics.find(t => t.id === topicId);
+            const counts = {};
+            const voters = {};
+
+            Object.values(data).forEach(vote => {
+                const option = topic.options[vote.option];
+                counts[option] = (counts[option] || 0) + 1;
+                if (!voters[option]) voters[option] = [];
+                voters[option].push(vote.name);
+            });
+
+            let html = '<strong>RESULTATEN</strong>';
+            topic.options.forEach(option => {
+                const count = counts[option] || 0;
+                const names = voters[option] || [];
+                html += `
+                    <div class="result-item">
+                        <span>${option}</span>
+                        <span><strong>${count}</strong> ${names.length > 0 ? `(${names.join(', ')})` : ''}</span>
+                    </div>
+                `;
+            });
+
+            resultsDiv.innerHTML = html;
+        }
+
+        document.getElementById('submitBtn').onclick = async () => {
+            const userName = document.getElementById('userName').value.trim();
+            const extraComments = document.getElementById('extraComments').value.trim();
+            const availability = document.getElementById('availability').value.trim();
+            const statusMessage = document.getElementById('statusMessage');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Security: Validate user name
+            if (!userName) {
+                statusMessage.className = 'status-message error';
+                statusMessage.textContent = 'VUL JE NAAM IN!';
+                return;
+            }
+
+            if (!validateName(userName)) {
+                statusMessage.className = 'status-message error';
+                statusMessage.textContent = 'ONGELDIGE NAAM! Gebruik alleen letters, cijfers en spaties (2-50 tekens)';
+                return;
+            }
+
+            if (Object.keys(userVotes).length === 0) {
+                statusMessage.className = 'status-message error';
+                statusMessage.textContent = 'STEM OP MINSTENS 1 TOPIC!';
+                return;
+            }
+
+            // Security: Check rate limiting
+            if (!checkRateLimit()) {
+                statusMessage.className = 'status-message error';
+                statusMessage.textContent = 'TE SNEL! Wacht 5 seconden tussen submissions.';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '[ VALIDATING... ]';
+
+            try {
+                // Security: Check if user already voted
+                const alreadyVoted = await hasUserVoted(userName);
+                if (alreadyVoted) {
+                    statusMessage.className = 'status-message error';
+                    statusMessage.textContent = 'JE HEBT AL GESTEMD! Elke naam kan maar 1x stemmen.';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'STEM INDIENEN';
+                    return;
+                }
+
+                submitBtn.textContent = '[ TRANSMITTING DATA... ]';
+
+                // Security: Sanitize all inputs
+                const sanitizedName = sanitizeInput(userName);
+                const sanitizedComments = sanitizeInput(extraComments);
+                const sanitizedAvailability = sanitizeInput(availability);
+
+                // Validate sanitized data
+                if (sanitizedComments.length > 500) {
+                    statusMessage.className = 'status-message error';
+                    statusMessage.textContent = 'COMMENTS TE LANG! Max 500 tekens.';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'STEM INDIENEN';
+                    return;
+                }
+
+                if (sanitizedAvailability.length > 500) {
+                    statusMessage.className = 'status-message error';
+                    statusMessage.textContent = 'BESCHIKBAARHEID TE LANG! Max 500 tekens.';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'STEM INDIENEN';
+                    return;
+                }
+
+                // Save votes
+                for (const [topicId, optionIdx] of Object.entries(userVotes)) {
+                    const voteRef = push(ref(database, `votes/${topicId}`));
+                    await set(voteRef, {
+                        name: sanitizedName,
+                        option: optionIdx,
+                        timestamp: Date.now()
+                    });
+                }
+
+                // Save comments if provided
+                if (sanitizedComments || sanitizedAvailability) {
+                    const commentRef = push(ref(database, 'comments'));
+                    await set(commentRef, {
+                        name: sanitizedName,
+                        extraComments: sanitizedComments,
+                        availability: sanitizedAvailability,
+                        timestamp: Date.now()
+                    });
+                }
+
+                statusMessage.className = 'status-message success';
+                statusMessage.textContent = 'DATA TRANSMISSION COMPLETE';
+                submitBtn.textContent = '[ TRANSMISSION COMPLETE ]';
+
+                // Scroll to success message
+                statusMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            } catch (error) {
+                console.error('Error:', error);
+                statusMessage.className = 'status-message error';
+                statusMessage.textContent = 'TRANSMISSION FAILED - TRY AGAIN';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'STEM INDIENEN';
+            }
+        };
+
+        renderTopics();
+    </script>
+</body>
+</html>
