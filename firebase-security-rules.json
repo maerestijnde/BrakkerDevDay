@@ -1,0 +1,73 @@
+{
+  "rules": {
+    "votes": {
+      "$topicId": {
+        // Allow anyone to read votes
+        ".read": true,
+
+        "$voteId": {
+          // Allow write only if data is valid
+          ".write": "newData.exists() &&
+                     newData.hasChildren(['name', 'option', 'timestamp']) &&
+                     newData.child('name').isString() &&
+                     newData.child('name').val().length >= 2 &&
+                     newData.child('name').val().length <= 50 &&
+                     newData.child('option').isNumber() &&
+                     newData.child('timestamp').isNumber()",
+
+          // Validate individual fields
+          "name": {
+            ".validate": "newData.isString() &&
+                          newData.val().length >= 2 &&
+                          newData.val().length <= 50 &&
+                          newData.val().matches(/^[a-zA-Z0-9\\s\\-_.]+$/)"
+          },
+          "option": {
+            ".validate": "newData.isNumber() &&
+                          newData.val() >= 0 &&
+                          newData.val() <= 2"
+          },
+          "timestamp": {
+            ".validate": "newData.isNumber() &&
+                          newData.val() <= now + 10000"
+          }
+        }
+      }
+    },
+
+    "comments": {
+      // Allow anyone to read comments
+      ".read": true,
+
+      "$commentId": {
+        // Allow write only if data is valid
+        ".write": "newData.exists() &&
+                   newData.hasChildren(['name', 'timestamp']) &&
+                   newData.child('name').isString() &&
+                   newData.child('name').val().length >= 2 &&
+                   newData.child('name').val().length <= 50 &&
+                   newData.child('timestamp').isNumber()",
+
+        // Validate individual fields
+        "name": {
+          ".validate": "newData.isString() &&
+                        newData.val().length >= 2 &&
+                        newData.val().length <= 50 &&
+                        newData.val().matches(/^[a-zA-Z0-9\\s\\-_.]+$/)"
+        },
+        "extraComments": {
+          ".validate": "newData.isString() &&
+                        newData.val().length <= 500"
+        },
+        "availability": {
+          ".validate": "newData.isString() &&
+                        newData.val().length <= 500"
+        },
+        "timestamp": {
+          ".validate": "newData.isNumber() &&
+                        newData.val() <= now + 10000"
+        }
+      }
+    }
+  }
+}
